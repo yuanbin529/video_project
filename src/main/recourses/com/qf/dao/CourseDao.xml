@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.CourseDao">
+    <resultMap id="CourseMap" type="course">
+        <id column="id" property="id"/>
+        <result column="course_title" property="courseTitle"/>
+        <result column="course_desc" property="courseDesc"/>
+        <result column="subject_id" property="subjectId"/>
+    </resultMap>
+
+    <resultMap id="courseMap" type="courseVideoModel">
+        <result column="course_title" property="courseTitle"/>
+        <result column="course_desc" property="courseDesc"/>
+        <collection property="videoList" javaType="list" ofType="videoModel">
+            <id column="vid" property="id"/>
+            <result column="title" property="title"/>
+            <result column="time" property="time"/>
+            <result column="detail" property="detail"/>
+            <result column="play_num" property="playNum"/>
+            <result column="image_url" property="imageUrl"/>
+            <result column="video_url" property="videoUrl"/>
+            <association property="speaker" javaType="speaker">
+                <result column="speaker_name" property="speakerName"/>
+            </association>
+        </collection>
+    </resultMap>
+    <select id="findCourseAnd" parameterType="int" resultMap="courseMap">
+        select c.course_title,c.course_desc,
+                v.id vid,v.title,v.time,v.detail,v.play_num,v.image_url,v.video_url,
+                s.speaker_name
+         from course c
+         inner join video v
+         on c.id = v.course_id
+         inner join speaker s
+         on s.id = v.speaker_id
+         where c.id = #{id}
+    </select>
+    <select id="findAllCourse" resultMap="CourseMap">
+        select * from course
+    </select>
+    <insert id="addCourse" parameterType="course">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+        select last_insert_id()
+        </selectKey>
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseTitle != null">
+                course_title,
+            </if>
+            <if test="courseDesc != null">
+                course_desc,
+            </if>
+            <if test="subjectId != null">
+                subject_id
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseTitle != null">
+                #{courseTitle},
+            </if>
+            <if test="courseDesc != null">
+                #{courseDesc},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId}
+            </if>
+        </trim>
+    </insert>
+    <delete id="deleteById" parameterType="int">
+delete  from course where id = #{id}
+    </delete>
+    <update id="updateCourse" parameterType="course">
+        update course
+        <set>
+            <if test="courseTitle != null">
+                course_title = #{courseTitle},
+            </if>
+            <if test="courseDesc != null">
+                course_desc = #{courseDesc},
+            </if>
+            <if test="subjectId != null">
+                subject_id = #{subjectId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="findById" parameterType="int" resultMap="CourseMap">
+        select * from course where id = #{id}
+    </select>
+</mapper>

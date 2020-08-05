@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.UserDao">
+    <select id="selectUserByEmailAndPassword"  resultType="user">
+        select * from user where email = #{email} and password = #{password}
+    </select>
+
+    <insert id="insertUser" parameterType="user">
+        insert into user (email,password,createTime)
+        values (#{email},#{password},#{createTime})
+    </insert>
+
+    <select id="selectUserByEmail"  resultType="user">
+        select * from user where email = #{email}
+    </select>
+
+    <update id="updateUser" parameterType="user">
+        UPDATE user SET
+        email = #{email},
+        phoneNum = #{phoneNum},
+        password = #{password},
+        code = #{code},
+        nickName = #{nickName},
+        sex = #{sex},
+        birthday = #{birthday},
+        address = #{address},
+        imgUrl = #{imgUrl},
+        createTime = #{createTime}
+        WHERE
+        id = #{id};
+    </update>
+</mapper>

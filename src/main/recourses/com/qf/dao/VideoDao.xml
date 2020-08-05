@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.VideoDao">
+    <resultMap id="videoMap" type="videoModel">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="detail" property="detail"/>
+        <result column="time" property="time"/>
+        <result column="play_num" property="playNum"/>
+        <result column="speaker_id" property="speakerId"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="course_id" property="courseId"/>
+        <association property="speaker" javaType="speaker">
+            <result column="speaker_name" property="speakerName"/>
+            <result column="speaker_desc" property="speakerDesc"/>
+            <result column="head_img_url" property="headImgUrl"/>
+        </association>
+    </resultMap>
+    <resultMap id="myVideo" type="video">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="detail" property="detail"/>
+        <result column="time" property="time"/>
+        <result column="play_num" property="playNum"/>
+        <result column="speaker_id" property="speakerId"/>
+        <result column="course_id" property="courseId"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="image_url" property="imageUrl"/>
+    </resultMap>
+
+
+    <select id="videoAndSpeaker" parameterType="int" resultMap="videoMap">
+        select v.id,v.title,v.detail,v.time,v.speaker_id,v.video_url,v.image_url,v.course_id,
+         s.speaker_name,s.speaker_desc,s.head_img_url
+         from video v
+         inner join speaker s
+         on v.speaker_id = s.id
+         where v.id = #{id}
+    </select>
+    <select id="findAllVideo" parameterType="map" resultMap="videoMap">
+        select v.id,v.title,v.detail,v.time,v.speaker_id,v.play_num,s.id,s.speaker_name
+        from video v
+        inner join speaker s
+        on v.speaker_id = s.id
+        where 1 = 1
+        <if test="searchInfo != null">
+            and v.title like "%${searchInfo}%"
+        </if>
+        <if test="courseId != null">
+            and v.course_id = #{courseId}
+        </if>
+        <if test="speakerId != null">
+            and v.speaker_id = #{speakerId}
+        </if>
+    </select>
+
+    <select id="findById" parameterType="int" resultMap="myVideo">
+        select * from video where id = #{id}
+
+    </select>
+
+    <delete id="deleteById" parameterType="int">
+        delete from video where id = #{id}
+    </delete>
+    <insert id="addVideo" parameterType="video">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into video
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                title,
+            </if>
+            <if test="detail != null">
+                detail,
+            </if>
+            <if test="time != null">
+                time,
+            </if>
+            <if test="speakerId != null">
+                speaker_id,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="videoUrl != null">
+                video_url,
+            </if>
+            <if test="imageUrl != null">
+                image_url,
+            </if>
+            <if test="playNum != null">
+                play_num
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                #{title},
+            </if>
+            <if test="detail != null">
+                #{detail},
+            </if>
+            <if test="time != null">
+                #{time},
+            </if>
+            <if test="speakerId != null">
+                #{speakerId},
+            </if>
+            <if test="courseId != null">
+                #{courseId},
+            </if>
+            <if test="videoUrl != null">
+                #{videoUrl},
+            </if>
+            <if test="imageUrl != null">
+                #{imageUrl},
+            </if>
+            <if test="playNum != null">
+                #{playNum}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateVideo" parameterType="video">
+        update video
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="speakerId != null">
+                speaker_id = #{speakerId},
+            </if>
+            <if test="courseId != null">
+                course_id =  #{courseId},
+            </if>
+            <if test="videoUrl != null">
+                video_url = #{videoUrl},
+            </if>
+            <if test="imageUrl != null">
+                image_url = #{imageUrl},
+            </if>
+            <if test="playNum != null">
+                play_num = #{playNum}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSomeVideos" parameterType="map">
+        delete from video where id in
+        <foreach collection="array" item="id" open="(" close=")"  separator= ",">
+                #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

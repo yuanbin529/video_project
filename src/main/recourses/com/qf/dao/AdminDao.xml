@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.AdminDao">
+    <resultMap id="AdminMap" type="admin">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="roles" property="roles"/>
+    </resultMap>
+    <select id="findByUsername" resultType="admin">
+        select * from admin where username=#{username}
+    </select>
+
+    <insert id="regist">
+        insert into admin
+        <trim suffixOverrides="," prefix="(" suffix=")">
+            <if test="username != null" >username,</if>
+            <if test="password != null" >password,</if>
+            <if test="roles != null" >roles,</if>
+        </trim>
+        values
+        <trim suffixOverrides="," prefix="(" suffix=")">
+            <if test="username != null" >#{username},</if>
+            <if test="password != null" >#{password},</if>
+            <if test="roles != null" >#{roles},</if>
+        </trim>
+    </insert>
+</mapper>

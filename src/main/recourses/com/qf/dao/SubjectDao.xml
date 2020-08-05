@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.SubjectDao">
+    <resultMap id="subjectMap" type="subject">
+        <id column="id" property="id"/>
+        <result column="subject_name" property="subjectName"/>
+    </resultMap>
+
+    <resultMap id="subjectModel" type="subjectModel">
+        <id column="id" property="id"/>
+        <result column="subject_name" property="subjectName"/>
+        <collection property="courseList" javaType="list" ofType="courseModel" >
+            <result column="course_title" property="courseTitle"/>
+            <result column="course_desc" property="courseDesc"/>
+            <collection property="videoList" javaType="list" ofType="video">
+                <id column="vid" property="id"/>
+                <result column="title" property="title"/>
+                <result column="time" property="time"/>
+                <result column="play_num" property="playNum"/>
+                <result column="image_url" property="imageUrl"/>
+                <result column="video_url" property="videoUrl"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findSubjectAnd" parameterType="int" resultMap="subjectModel">
+        select su.id,su.subject_name,co.course_title,co.course_desc,
+               v.id vid,v.title,v.time,v.play_num,v.image_url,v.video_url
+               from subject su
+               inner join course co
+               on su.id = co.subject_id
+               inner join video v
+               on v.course_id = co.id
+               where su.id = #{subjectId}
+    </select>
+
+    <select id="findAllSubject" resultMap="subjectMap">
+        select * from subject
+    </select>
+
+    <select id="findById" resultMap="subjectMap">
+        select * from subject where id = #{id};
+    </select>
+
+    <select id="selectAll" resultMap="subjectMap">
+        select id as sid,
+        subject_name from subject
+    </select>
+</mapper>
